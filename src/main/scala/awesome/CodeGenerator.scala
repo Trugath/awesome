@@ -1,78 +1,57 @@
 package awesome
 
-import org.apache.bcel.Constants
-import org.apache.bcel.generic._
+import cafebabe._
+import ByteCodes._
+import AbstractByteCodes._
 
 class CodeGenerator {
-  def generateClass(sourceFileName : String, module : Module) = {
-    //
-    // public class HelloWorld extends java.lang.Object
-    //
-    val cg = new ClassGen(
-      classNameFor(sourceFileName),
-      "java.lang.Object",
-      sourceFileName,
-      Constants.ACC_PUBLIC,
-      Array()
-    )
+  def generateClass(sourceFileName: String, module: Module) = {
+    val cf = new cafebabe.ClassFile(binaryNameFor(sourceFileName), None)
+    val ch = cf.addMainMethod().codeHandler
+    visitModule(ch, module)
+    ch << RETURN
+    ch.freeze()
+    cf.writeToFile(classFileNameFor(sourceFileName))
 
-    //
-    // public static void main(String[] args)
-    //
-    val mg = new MethodGen(
-      Constants.ACC_PUBLIC | Constants.ACC_STATIC,
-      Type.VOID,
-      Array(new ArrayType(Type.STRING, 1)),
-      Array("args"),
-      "main",
-      cg.getClassName(),
-      new InstructionList(),
-      cg.getConstantPool()
-    )
-    val il = mg.getInstructionList()
-    val f = new InstructionFactory(cg)
-
-    visitModule(il, f, module)
-    il.append(InstructionFactory.createReturn(Type.VOID))
-
-    mg.setMaxStack()
-    cg.addMethod(mg.getMethod())
-
-    //
-    // Write the class file.
-    //
-    cg.getJavaClass().dump(classFileNameFor(sourceFileName))
+    val cl = new CafebabeClassLoader
+    cl.register(cf)
   }
 
-  def visitModule(il : InstructionList, f : InstructionFactory, module : Module) = {
+  def visitModule(ch: CodeHandler, module: Module): Unit = {
     module.expressions foreach { expr =>
-      il.append(f.createGetStatic("java.lang.System", "out", new ObjectType("java.io.PrintStream")))
-      visitExpr(il, f, expr)
-      il.append(f.createInvoke("java.io.PrintStream", "println", Type.VOID, Array(Type.INT), Constants.INVOKEVIRTUAL))
+      ch << GetStatic("java/lang/System", "out", "Ljava/io/PrintStream;")
+      visitExpr(ch, expr)
+      ch << InvokeVirtual("java/io/PrintStream", "println", "(I)V")
     }
   }
 
-  def visitExpr(il : InstructionList, f : InstructionFactory, expr : Expr) : Unit = {
+  def visitExpr(ch: CodeHandler, expr: Expr): Unit = {
     expr match {
-      case binop : BinOp => visitBinOp(il, f, binop)
-      case num : Num => visitNum(il, f, num)
+      case binop: BinOp => visitBinOp(ch, binop)
+      case num: Num => visitNum(ch, num)
     }
   }
 
-  def visitBinOp(il : InstructionList, f : InstructionFactory, binop : BinOp) = {
-    visitExpr(il, f, binop.left)
-    visitExpr(il, f, binop.right)
+  def visitBinOp(ch: CodeHandler, binop: BinOp): Unit = {
+    visitExpr(ch, binop.left)
+    visitExpr(ch, binop.right)
     binop.op match {
-      case "+" => il.append(new IADD())
-      case "-" => il.append(new ISUB())
-      case "*" => il.append(new IMUL())
-      case "/" => il.append(new IDIV())
+      case "+" => ch << IADD
+      case "-" => ch << ISUB
+      case "*" => ch << IMUL
+      case "/" => ch << IDIV
     }
   }
 
-  def visitNum(il : InstructionList, f : InstructionFactory, num : Num) = {
-    il.append(f.createConstant(num.value))
+  def visitNum(ch: CodeHandler, num: Num): Unit = {
+    ch << Ldc(num.value)
   }
+
+  /*
+   * "examples/HelloWorld.awesome" -> "examples/HelloWorld"
+   */
+  def binaryNameFor(sourceFileName : String) : String =
+    sourceFileName.replaceAll("\\.awesome$", "")
 
   /*
    * "examples/HelloWorld.awesome" -> "examples.HelloWorld"
@@ -87,4 +66,3 @@ class CodeGenerator {
     sourceFileName.replaceAll("\\.awesome$", ".class")
 
 }
-
