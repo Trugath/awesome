@@ -80,7 +80,7 @@ class CodeGenerator {
    * "examples/HelloWorld.awesome" -> "examples.HelloWorld"
    */
   def classNameFor(sourceFileName : String) : String =
-    sourceFileName.replaceAll("\\.awesome$", "").replaceAll(File.separator, ".")
+    sourceFileName.replaceAll("\\.awesome$", "").replace("/", ".").replace("\\", ".")
 
   /*
    * "examples/HelloWorld.awesome" -> "examples/HelloWorld.class"
