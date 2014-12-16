@@ -10,29 +10,39 @@ class Parser extends RegexParsers {
 
   import scala.language.postfixOps
 
-  def program = ((expression <~ ";")*) ^^ { case expressions => Module(expressions) }
+  def program: Parser[Module] =
+    ((expression <~ ";")*) ^^ { case expressions => Module(expressions) }
 
-  def expression = sum
+  def expression: Parser[Expr] =
+    sum
 
-  def sum = (product ~ ((("+" | "-") ~ product)*)) ^^ { case head ~ tail =>
-    foldBinOps(head, tail)
+  def sum: Parser[Expr] = {
+    (product ~ ((("+" | "-") ~ product)*)) ^^ { case head ~ tail =>
+      foldBinOps(head, tail)
+    }
   }
 
-  def product = (number ~ ((("*" | "/") ~ number)*)) ^^ { case head ~ tail =>
-    foldBinOps(head, tail)
+  def product: Parser[Expr] = {
+    (number ~ ((("*" | "/") ~ number)*)) ^^ { case head ~ tail =>
+      foldBinOps(head, tail)
+    }
   }
 
-  def number = ("[0-9]+" r) ^^ { case value => Num(Integer.parseInt(value)) }
+  def number: Parser[Num] = {
+    ("[0-9]+" r) ^^ { case value =>
+      Num(Integer.parseInt(value))
+    }
+  }
 
-  def foldBinOps(head : Expr, tail : List[String ~ Expr]) : Expr = {
+  def foldBinOps(head: Expr, tail: List[String ~ Expr]): Expr = {
     tail.foldLeft(head)((left, right) => BinOp(right._1, left, right._2) )
   }
 
-  def parse(inputStream : InputStream) : Either[String, Module] = {
-    val reader = new BufferedReader(new InputStreamReader(inputStream))
+  def parse(inputStream: InputStream): Either[String, Module] = {
+    val reader = new BufferedReader( new InputStreamReader(inputStream) )
     parseAll(program, reader) match {
       case Success(module, _) => Right(module)
-      case NoSuccess(err, _) => Left(err)
+      case NoSuccess(err, _)  => Left(err)
     }
   }
 }

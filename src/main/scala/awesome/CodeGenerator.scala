@@ -4,8 +4,8 @@ import cafebabe._
 import ByteCodes._
 import AbstractByteCodes._
 
-class CodeGenerator {
-  def generateClass(sourceFileName: String, module: Module) = {
+object CodeGenerator {
+  def generateClass(sourceFileName: String, module: Module): Unit = {
     val cf = new cafebabe.ClassFile(binaryNameFor(sourceFileName), None)
     val ch = cf.addMainMethod().codeHandler
     visitModule(ch, module)
@@ -40,26 +40,25 @@ class CodeGenerator {
     }
   }
 
-  def visitNum(ch: CodeHandler, num: Num): Unit = {
+  def visitNum(ch: CodeHandler, num: Num): Unit =
     ch << Ldc(num.value)
-  }
 
   /*
    * "examples/HelloWorld.awesome" -> "examples/HelloWorld"
    */
-  def binaryNameFor(sourceFileName : String) : String =
+  def binaryNameFor(sourceFileName: String): String =
     sourceFileName.replaceAll("\\.awesome$", "")
 
   /*
    * "examples/HelloWorld.awesome" -> "examples.HelloWorld"
    */
-  def classNameFor(sourceFileName : String) : String =
+  def classNameFor(sourceFileName: String): String =
     sourceFileName.replaceAll("\\.awesome$", "").replace("/", ".").replace("\\", ".")
 
   /*
    * "examples/HelloWorld.awesome" -> "examples/HelloWorld.class"
    */
-  def classFileNameFor(sourceFileName : String) : String =
+  def classFileNameFor(sourceFileName: String): String =
     sourceFileName.replaceAll("\\.awesome$", ".class")
 
 }
