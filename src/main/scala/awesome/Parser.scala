@@ -7,6 +7,9 @@ import java.io.InputStreamReader
 import scala.util.parsing.combinator.RegexParsers
 
 class Parser extends RegexParsers {
+
+  import scala.language.postfixOps
+
   def program = ((expression <~ ";")*) ^^ { case expressions => Module(expressions) }
 
   def expression = sum

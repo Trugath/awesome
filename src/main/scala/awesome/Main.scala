@@ -11,7 +11,7 @@ object Main {
     inputStream.close()
 
     res match {
-      case Left(err) => error(err)
+      case Left(err) => sys.error(err)
       case Right(module) => {
         val codeGenerator = new CodeGenerator()
         codeGenerator.generateClass(sourceFileName, module)

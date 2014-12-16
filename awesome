@@ -1,9 +1,9 @@
 #!/bin/bash
 
-CLASSPATH="target/oscon-0.1.0.jar"
-for jar in lib/*.jar; do
-    CLASSPATH="$CLASSPATH:$jar"
-done
+jar=target/scala-2.11/awesome-assembly-1.0.jar
+if [ ! -f $jar ]; then
+    sbt assembly
+fi
 
-"$JAVA_HOME/bin/java" -cp "$CLASSPATH" awesome.Main "$@"
+"$JAVA_HOME/bin/java" -cp $jar awesome.Main "$@"
 
