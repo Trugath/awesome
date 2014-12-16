@@ -1,7 +1,9 @@
-# oscon2011-awesome
+# awesome
 
 A small expression compiler for the JVM, written under duress during a
-presentation at OSCON Java 2011.
+presentation at OSCON Java 2011 by Thomas Lee.
+
+Code generator migrated to cafebabe by Trugath
 
 ## Status
 
@@ -13,15 +15,9 @@ A compiler for a simple expression evaluation language. Targets the JVM.
 
 ## Prerequisites
 
-* Apache Buildr >= 0.4.2
-* Scala 2.8.x
-* Apache BCEL 5.2
-
-## Installation
-
-0. Add scala-runtime.jar and bcel-5.2.jar to the lib/ directory.
-1. $ git clone thomaslee/oscon2011-awesome
-2. $ buildr package
+* sbt 13.7
+* scala 2.11.4
+* Access to the internet as it builds from source cafebabe
 
 ## Usage
 
@@ -38,7 +34,4 @@ Please log defects and feature requests using the issue tracker on github.
 ## About
 
 awesome was written by [Tom Lee](http://tomlee.co).
-
-Follow me on [Twitter](http://www.twitter.com/tglee) or
-[LinkedIn](http://au.linkedin.com/pub/thomas-lee/2/386/629).
 
