@@ -1,4 +1,4 @@
-# awesome
+# awesome [![Build Status](https://api.travis-ci.org/Trugath/awesome.svg?branch=master)](https://travis-ci.org/Trugath/awesome)
 
 A small expression compiler for the JVM, written under duress during a
 presentation at OSCON Java 2011 by Thomas Lee.
