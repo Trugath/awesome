@@ -1,7 +1,5 @@
 package awesome
 
-import java.io.File
-
 import org.apache.bcel.Constants
 import org.apache.bcel.generic._
 

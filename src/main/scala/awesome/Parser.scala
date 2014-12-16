@@ -30,7 +30,7 @@ class Parser extends RegexParsers {
 
   def parse(inputStream : InputStream) : Either[String, Module] = {
     val reader = new BufferedReader(new InputStreamReader(inputStream))
-    return parseAll(program, reader) match {
+    parseAll(program, reader) match {
       case Success(module, _) => Right(module)
       case NoSuccess(err, _) => Left(err)
     }

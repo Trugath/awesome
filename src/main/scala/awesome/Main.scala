@@ -12,10 +12,9 @@ object Main {
 
     res match {
       case Left(err) => sys.error(err)
-      case Right(module) => {
+      case Right(module) =>
         val codeGenerator = new CodeGenerator()
         codeGenerator.generateClass(sourceFileName, module)
-      }
     }
   }
 }
