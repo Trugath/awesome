@@ -12,9 +12,6 @@ class CodeGenerator {
     ch << RETURN
     ch.freeze()
     cf.writeToFile(classFileNameFor(sourceFileName))
-
-    val cl = new CafebabeClassLoader
-    cl.register(cf)
   }
 
   def visitModule(ch: CodeHandler, module: Module): Unit = {
