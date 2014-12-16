@@ -3,7 +3,7 @@ package awesome
 import java.io.FileInputStream
 
 object Main {
-  def main(args : Array[String]) = {
+  def main(args : Array[String]): Unit = {
     val sourceFileName = args(0)
     val inputStream = new FileInputStream(sourceFileName)
     val parser = new Parser()
