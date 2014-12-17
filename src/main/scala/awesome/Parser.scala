@@ -15,10 +15,10 @@ class Parser(val input: ParserInput) extends ParBoiledParser  {
   }
 
   def InputLine: Rule1[Module] = rule {
-    ModuleE ~ EOI
+    Program ~ EOI
   }
 
-  def ModuleE: Rule1[Module] = rule {
+  def Program: Rule1[Module] = rule {
     oneOrMore( Expression ) ~> ( (x: Seq[Expr]) => Module(x.toList) )
   }
 
