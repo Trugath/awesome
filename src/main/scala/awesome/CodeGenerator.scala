@@ -33,10 +33,10 @@ object CodeGenerator {
     visitExpr(ch, binop.left)
     visitExpr(ch, binop.right)
     binop.op match {
-      case "+" => ch << IADD
-      case "-" => ch << ISUB
-      case "*" => ch << IMUL
-      case "/" => ch << IDIV
+      case '+' => ch << IADD
+      case '-' => ch << ISUB
+      case '*' => ch << IMUL
+      case '/' => ch << IDIV
     }
   }
 

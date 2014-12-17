@@ -1,49 +1,53 @@
 package awesome
 
-import java.io.InputStream
-import java.io.BufferedReader
-import java.io.InputStreamReader
+import org.parboiled2.{Parser => ParBoiledParser, CharPredicate, Rule0, Rule1, ParserInput}
 
-import scala.util.parsing.combinator.RegexParsers
+import scala.language.implicitConversions
 
-class Parser extends RegexParsers {
+class Parser(val input: ParserInput) extends ParBoiledParser  {
 
-  import scala.language.postfixOps
-
-  def program: Parser[Module] =
-    ((expression <~ ";")*) ^^ { case expressions => Module(expressions) }
-
-  def expression: Parser[Expr] =
-    sum
-
-  def sum: Parser[Expr] = {
-    (product ~ ((("+" | "-") ~ product)*)) ^^ { case head ~ tail =>
-      foldBinOps(head, tail)
-    }
+  implicit def wspStr(s: String): Rule0 = rule {
+    zeroOrMore(ch(' ')) ~ str(s) ~ zeroOrMore(ch(' '))
   }
 
-  def product: Parser[Expr] = {
-    (number ~ ((("*" | "/") ~ number)*)) ^^ { case head ~ tail =>
-      foldBinOps(head, tail)
-    }
+  implicit def wspCh(s: Char): Rule0 = rule {
+    zeroOrMore(ch(' ')) ~ ch(s) ~ zeroOrMore(ch(' '))
   }
 
-  def number: Parser[Num] = {
-    ("[0-9]+" r) ^^ { case value =>
-      Num(Integer.parseInt(value))
-    }
+  def InputLine: Rule1[Module] = rule {
+    ModuleE ~ EOI
   }
 
-  def foldBinOps(head: Expr, tail: List[String ~ Expr]): Expr = {
-    tail.foldLeft(head)((left, right) => BinOp(right._1, left, right._2) )
+  def ModuleE: Rule1[Module] = rule {
+    oneOrMore( Expression ) ~> ( (x: Seq[Expr]) => Module(x.toList) )
   }
 
-  def parse(inputStream: InputStream): Either[String, Module] = {
-    val reader = new BufferedReader( new InputStreamReader(inputStream) )
-    parseAll(program, reader) match {
-      case Success(module, _) => Right(module)
-      case NoSuccess(err, _)  => Left(err)
-    }
+  def Expression: Rule1[Expr] = rule {
+    Term ~ zeroOrMore(
+      '+' ~ Term ~> ((a: Expr, b: Expr) => BinOp('+', a, b))
+    | '-' ~ Term ~> ((a: Expr, b: Expr) => BinOp('-', a, b))) ~ ';'
+  }
+
+  def Term: Rule1[Expr] = rule {
+    Factor ~ zeroOrMore(
+      '*' ~ Factor ~> ((a: Expr, b: Expr) => BinOp('*', a, b))
+    | '/' ~ Factor ~> ((a: Expr, b: Expr) => BinOp('/', a, b)))
+  }
+
+  def Factor: Rule1[Expr] = rule {
+    Number | Parens
+  }
+
+  def Parens: Rule1[Expr] = rule {
+    '(' ~ Expression ~ ')'
+  }
+
+  def Number: Rule1[Num] = rule {
+    capture(Digits) ~> ((i: String) => Num(i.toInt))
+  }
+
+  def Digits: Rule0 = rule {
+    oneOrMore(CharPredicate.Digit)
   }
 }
 
