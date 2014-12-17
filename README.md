@@ -1,7 +1,7 @@
 # awesome [![Build Status](https://api.travis-ci.org/Trugath/awesome.svg?branch=master)](https://travis-ci.org/Trugath/awesome)
 
 A small expression compiler for the JVM, written under duress during a
-presentation at OSCON Java 2011 by Thomas Lee.
+[presentation](http://youtu.be/9TB61usr728) at OSCON Java 2011 by Thomas Lee.
 
 Code generator migrated to cafebabe by Trugath
 
